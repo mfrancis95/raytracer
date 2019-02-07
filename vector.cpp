@@ -8,7 +8,11 @@ double Vector::dot(const Vector &vector) const {
 }
 
 double Vector::length() const {
-    return std::sqrt(x * x + y * y + z * z);
+    return std::sqrt(lengthSquared());
+}
+
+double Vector::lengthSquared() const {
+    return x * x + y * y + z * z;
 }
 
 Vector &Vector::normalise() {
