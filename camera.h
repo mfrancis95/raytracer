@@ -4,7 +4,8 @@ struct Camera {
 
     Vector direction, position, right, up;
 
+    Camera();
     Camera(const Vector &position, const Vector &lookAt);
-    Ray trace(const unsigned x, const unsigned y) const;
+    Ray trace(const double x, const double y) const;
 
 };

@@ -1,5 +1,7 @@
 #include "camera.h"
 
+Camera::Camera() : Camera{{0, 0, 0}, {0, 0, -1}} {}
+
 Camera::Camera(const Vector &position, const Vector &lookAt) {
     this->position = position;
     direction = (lookAt - position).normalise();
@@ -7,6 +9,6 @@ Camera::Camera(const Vector &position, const Vector &lookAt) {
     up = (direction * right).normalise();
 }
 
-Ray Camera::trace(const unsigned x, const unsigned y) const {
-    return {position, (right * x + up * y + direction).normalise()};
+Ray Camera::trace(const double x, const double y) const {
+    return {(right * x + up * y + direction).normalise(), position};
 }

@@ -5,7 +5,7 @@ struct Sphere : Primitive {
     double radiusSquared;
     Vector position;
 
-    Sphere(Vector &position, double radius);
+    Sphere(const Vector &position, const double radius);
     Intersection intersect(const Ray &ray) const;
 
 };

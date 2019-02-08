@@ -1,9 +1,10 @@
 #include <SDL2/SDL.h>
+#include "scene.h"
 
 struct Renderer {
 
     virtual ~Renderer() = default;
-    virtual void render() = 0;
+    virtual void render(const Scene &scene) = 0;
 
 protected:
 

@@ -1,6 +1,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <iostream>
+
 struct Vector {
 
     double x, y, z;
@@ -18,5 +20,7 @@ struct Vector {
     Vector &operator+=(const Vector &vector);
 
 };
+
+std::ostream& operator<<(std::ostream &os, const Vector &vector);
 
 #endif

@@ -16,11 +16,11 @@ double Vector::lengthSquared() const {
 }
 
 Vector &Vector::normalise() {
-    double len = length();
+    auto len = length();
     if (len) {
         x /= len;
         y /= len;
-        y /= len;
+        z /= len;
     }
     return *this;
 }
@@ -46,4 +46,8 @@ Vector &Vector::operator+=(const Vector &vector) {
     y += vector.y;
     z += vector.z;
     return *this;
+}
+
+std::ostream& operator<<(std::ostream &os, const Vector &vector) {
+    return os << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
 }
