@@ -1,3 +1,4 @@
+#include "illumination.h"
 #include "renderer.h"
 
 struct SoftwareRenderer : Renderer {
@@ -23,19 +24,25 @@ struct SoftwareRenderer : Renderer {
         for (auto x = 0; x < width; x++) {
             for (auto y = 0; y < height; y++) {
                 Intersection closestIntersection = NO_INTERSECTION;
+                Illumination *illumination;
                 Material material;
                 Primitive *primitive;
-                auto ray = scene.camera.trace(x * 1.0 / width * aspectRatio, y * 1.0 / height);
+                auto ray = scene.camera.trace(x * 1.0 / width * aspectRatio - 0.5, y * 1.0 / height - 0.5);
                 for (auto i = 0; i < scene.primitives.size(); i++) {
                     Intersection intersection = scene.primitives[i]->intersect(ray);
                     if (!std::isinf(intersection.distance) && intersection.distance < closestIntersection.distance) {
                         closestIntersection = intersection;
+                        illumination = scene.illuminations[i];
                         material = scene.materials[i];
                         primitive = scene.primitives[i];
                     }
                 }
                 if (!std::isinf(closestIntersection.distance)) {
-                    pixels[x + y * width] = material.colour;
+                    Vector colour;
+                    for (auto &light : scene.lights) {
+                        colour += illumination->illuminate(closestIntersection, light, material);
+                    }
+                    pixels[x + y * width] = (unsigned) colour;
                 }
             }
         }

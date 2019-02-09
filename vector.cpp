@@ -1,6 +1,12 @@
 #include <cmath>
 #include "vector.h"
 
+Vector::Vector() : x{0}, y{0}, z{0} {}
+
+Vector::Vector(unsigned colour) :
+    x{((colour >> 16) & 0xFF) / 255.0}, y{((colour >> 8) & 0xFF) / 255.0},
+    z{(colour & 0xFF) / 255.0} {}
+
 Vector::Vector(double x, double y, double z) : x{x}, y{y}, z{z} {}
 
 double Vector::dot(const Vector &vector) const {
@@ -23,6 +29,10 @@ Vector &Vector::normalise() {
         z /= len;
     }
     return *this;
+}
+
+Vector::operator unsigned() const {
+    return ((unsigned) (x * 0xFF) << 16) | ((unsigned) (y * 0xFF) << 8) | (unsigned) (z * 0xFF);
 }
 
 Vector Vector::operator*(const double scalar) const {

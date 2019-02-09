@@ -1,5 +1,5 @@
 #include "vector.h"
 
 typedef struct {
-    Vector colour;
-} Material;
+    Vector position;
+} Light;

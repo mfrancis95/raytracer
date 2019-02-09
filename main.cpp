@@ -1,3 +1,4 @@
+#include "phong.h"
 #include "renderer.h"
 #include "sphere.h"
 
@@ -8,8 +9,17 @@ int main() {
     );
     auto renderer = createRenderer(window);
     Scene scene;
-    scene.materials.push_back({0x00FF00});
-    scene.primitives.push_back(new Sphere{{0, 0, -5}, 1});
+    scene.lights.push_back({0xFFFFFF});
+    {
+        scene.illuminations.push_back(new Phong{});
+        scene.materials.push_back({0xFF0000});
+        scene.primitives.push_back(new Sphere{{0, 0, -5}, 1});
+    }
+    {
+        scene.illuminations.push_back(new Phong{});
+        scene.materials.push_back({0x00FF00});
+        scene.primitives.push_back(new Sphere{{1, 0, -5}, 0.5});
+    }
     renderer->render(scene);
     SDL_Event event;
     auto quit = false;

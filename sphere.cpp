@@ -25,7 +25,9 @@ Intersection Sphere::intersect(const Ray &ray) const {
         return NO_INTERSECTION;
     }
     if (t0 < 0) {
-        return {t1, ray.direction * t1 + ray.origin};
+        Vector point = ray.direction * t1 + ray.origin;
+        return {t1, (point - position).normalise(), point};
     }
-    return {t0, ray.direction * t0 + ray.origin};
+    Vector point = ray.direction * t0 + ray.origin;
+    return {t0, (point - position).normalise(), point};
 }
