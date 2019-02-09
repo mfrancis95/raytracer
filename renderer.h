@@ -3,15 +3,8 @@
 
 struct Renderer {
 
-    virtual ~Renderer() = default;
-    virtual void render(const Scene &scene) = 0;
-
-protected:
-
-    SDL_Window *window;
-
-    Renderer(SDL_Window *window);
+    virtual void render(SDL_Window *window, const Scene &scene) = 0;
 
 };
 
-Renderer *createRenderer(SDL_Window *window);
+Renderer *createRenderer();
