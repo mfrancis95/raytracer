@@ -7,8 +7,9 @@ int main() {
         0
     );
     auto renderer = createRenderer(window);
-    Scene scene = {Camera{{0, 0, 3}, {0, 0, 0}}};
-    scene.primitives.push_front(new Sphere{{0, 0, -2}, 1});
+    Scene scene;
+    scene.materials.push_back({0x00FF00});
+    scene.primitives.push_back(new Sphere{{0, 0, -5}, 1});
     renderer->render(scene);
     SDL_Event event;
     auto quit = false;

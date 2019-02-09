@@ -1,4 +1,3 @@
-#include <iostream>
 #include "renderer.h"
 
 struct SoftwareRenderer : Renderer {
@@ -17,23 +16,26 @@ struct SoftwareRenderer : Renderer {
             renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING,
             width, height
         );
-        int pitch, *pixels;
+        int pitch;
+        unsigned *pixels;
         SDL_LockTexture(texture, nullptr, (void **) &pixels, &pitch);
-        std::cout << scene.camera.right << std::endl;
+        auto aspectRatio = width * 1.0 / height;
         for (auto x = 0; x < width; x++) {
             for (auto y = 0; y < height; y++) {
                 Intersection closestIntersection = NO_INTERSECTION;
-                const Primitive *closestPrimitive;
-                auto ray = scene.camera.trace((double) x, (double) y);
-                for (auto &primitive : scene.primitives) {
-                    Intersection intersection = primitive->intersect(ray);
+                Material material;
+                Primitive *primitive;
+                auto ray = scene.camera.trace(x * 1.0 / width * aspectRatio, y * 1.0 / height);
+                for (auto i = 0; i < scene.primitives.size(); i++) {
+                    Intersection intersection = scene.primitives[i]->intersect(ray);
                     if (!std::isinf(intersection.distance) && intersection.distance < closestIntersection.distance) {
                         closestIntersection = intersection;
-                        closestPrimitive = primitive;
+                        material = scene.materials[i];
+                        primitive = scene.primitives[i];
                     }
                 }
                 if (!std::isinf(closestIntersection.distance)) {
-                    pixels[x + y * width] = 0xFF0000;
+                    pixels[x + y * width] = material.colour;
                 }
             }
         }
