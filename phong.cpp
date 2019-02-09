@@ -4,6 +4,6 @@
 Vector Phong::illuminate(
     const Intersection &intersection, const Light &light,
     const Material &material
-) {
+) const {
     return material.colour * std::max(0.0, (light.position - intersection.point).normalise().dot(intersection.normal));
 }

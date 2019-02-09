@@ -10,7 +10,7 @@ struct Illumination {
     virtual Vector illuminate(
         const Intersection &intersection, const Light &light,
         const Material &material
-    ) = 0;
+    ) const = 0;
 
 };
 

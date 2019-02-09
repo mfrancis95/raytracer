@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include "sphere.h"
 
 Sphere::Sphere(const Vector &position, const double radius) {
@@ -9,7 +8,7 @@ Sphere::Sphere(const Vector &position, const double radius) {
 }
 
 Intersection Sphere::intersect(const Ray &ray) const {
-    Vector difference = ray.origin - position;
+    auto difference = ray.origin - position;
     auto b = 2 * difference.dot(ray.direction);
     auto disc = b * b - 4 * (difference.lengthSquared() - radiusSquared);
     if (disc < 0) {
@@ -25,9 +24,9 @@ Intersection Sphere::intersect(const Ray &ray) const {
         return NO_INTERSECTION;
     }
     if (t0 < 0) {
-        Vector point = ray.direction * t1 + ray.origin;
+        auto point = ray.direction * t1 + ray.origin;
         return {t1, (point - position).normalise(), point};
     }
-    Vector point = ray.direction * t0 + ray.origin;
+    auto point = ray.direction * t0 + ray.origin;
     return {t0, (point - position).normalise(), point};
 }

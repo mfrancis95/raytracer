@@ -1,6 +1,8 @@
+#include "group.h"
 #include "phong.h"
 #include "renderer.h"
 #include "sphere.h"
+#include "triangle.h"
 
 int main() {
     auto window = SDL_CreateWindow(
@@ -9,16 +11,24 @@ int main() {
     );
     auto renderer = createRenderer();
     Scene scene;
-    scene.lights.push_back({0xFFFFFF});
+    scene.lights.push_back({{2, 5, 0}});
     {
-        scene.illuminations.push_back(new Phong{});
+        scene.illuminations.push_back(new Phong);
         scene.materials.push_back({0xFF0000});
         scene.primitives.push_back(new Sphere{{0, 0, -5}, 1});
     }
     {
-        scene.illuminations.push_back(new Phong{});
-        scene.materials.push_back({0x00FF00});
+        scene.illuminations.push_back(new Phong);
+        scene.materials.push_back({0xFF00});
         scene.primitives.push_back(new Sphere{{1, 0, -5}, 0.5});
+    }
+    {
+        scene.illuminations.push_back(new Phong);
+        scene.materials.push_back({0xFF});
+        scene.primitives.push_back(new Group{{
+            new Triangle{{-2, -1, -6}, {-2, -1, -2}, {2, -1, -2}},
+            new Triangle{{2, -1, -6}, {-2, -1, -6}, {2, -1, -2}}
+        }});
     }
     renderer->render(window, scene);
     SDL_Event event;

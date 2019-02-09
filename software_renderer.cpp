@@ -3,7 +3,7 @@
 
 struct SoftwareRenderer : Renderer {
 
-    void render(SDL_Window *window, const Scene &scene) {
+    void render(SDL_Window *window, const Scene &scene) const {
         int height, pitch, width;
         SDL_GetWindowSize(window, &width, &height);
         SDL_Renderer *renderer = SDL_CreateRenderer(
