@@ -11,16 +11,16 @@ int main() {
     );
     auto renderer = createRenderer();
     Scene scene;
-    scene.lights.push_back({{2, 5, 0}});
+    scene.lights.push_back({{4, 2, 0}});
     {
         scene.illuminations.push_back(new Phong);
         scene.materials.push_back({0xFF0000});
-        scene.primitives.push_back(new Sphere{{0, 0, -5}, 1});
+        scene.primitives.push_back(new Sphere{{0, -1, -3}, 0.25});
     }
     {
         scene.illuminations.push_back(new Phong);
         scene.materials.push_back({0xFF00});
-        scene.primitives.push_back(new Sphere{{1, 0, -5}, 0.5});
+        scene.primitives.push_back(new Sphere{{1, 0, -3.5}, 0.5});
     }
     {
         scene.illuminations.push_back(new Phong);

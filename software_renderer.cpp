@@ -36,7 +36,17 @@ struct SoftwareRenderer : Renderer {
                 if (!std::isinf(closestIntersection.distance)) {
                     Vector colour;
                     for (auto &light : scene.lights) {
-                        colour += illumination->illuminate(closestIntersection, light, material);
+                        auto intersectsPrimitive = false;
+                        auto ray = Ray{(light.position - closestIntersection.point).normalise(), closestIntersection.point};
+                        for (auto &p : scene.primitives) {
+                            if (primitive != p && !std::isinf(p->intersect(ray).distance)) {
+                                intersectsPrimitive = true;
+                                break;
+                            }
+                        }
+                        if (!intersectsPrimitive) {
+                            colour += illumination->illuminate(closestIntersection, light, material);
+                        }
                     }
                     pixels[x + y * width] = (unsigned) colour;
                 }
