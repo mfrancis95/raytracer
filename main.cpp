@@ -10,7 +10,7 @@ int main() {
         0
     );
     auto renderer = createRenderer();
-    Scene scene;
+    Scene scene = {{{}, {0, -1, -5}}};
     scene.lights.push_back({{4, 2, 0}});
     {
         scene.illuminations.push_back(new Phong);
@@ -20,11 +20,11 @@ int main() {
     {
         scene.illuminations.push_back(new Phong);
         scene.materials.push_back({0xFF00});
-        scene.primitives.push_back(new Sphere{{1, 0, -3.5}, 0.5});
+        scene.primitives.push_back(new Sphere{{1, -0.5, -3.5}, 0.25});
     }
     {
         scene.illuminations.push_back(new Phong);
-        scene.materials.push_back({0xFF});
+        scene.materials.push_back({0xFF, 1});
         scene.primitives.push_back(new Group{{
             new Triangle{{-2, -1, -6}, {-2, -1, -2}, {2, -1, -2}},
             new Triangle{{2, -1, -6}, {-2, -1, -6}, {2, -1, -2}}

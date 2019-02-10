@@ -1,6 +1,45 @@
 #include "illumination.h"
 #include "renderer.h"
 
+static Vector rayTrace(Primitive *ignore, const Ray &ray, const Scene &scene) {
+    Intersection closestIntersection = NO_INTERSECTION;
+    Illumination *illumination;
+    Material material;
+    Primitive *primitive;
+    for (auto i = 0; i < scene.primitives.size(); i++) {
+        if (ignore != scene.primitives[i]) {
+            Intersection intersection = scene.primitives[i]->intersect(ray);
+            if (!std::isinf(intersection.distance) && intersection.distance < closestIntersection.distance) {
+                closestIntersection = intersection;
+                illumination = scene.illuminations[i];
+                material = scene.materials[i];
+                primitive = scene.primitives[i];
+            }
+        }
+    }
+    if (std::isinf(closestIntersection.distance)) {
+        return {};
+    }
+    Vector colour;
+    for (auto &light : scene.lights) {
+        auto intersectsPrimitive = false;
+        auto ray = Ray{(light.position - closestIntersection.point).normalise(), closestIntersection.point};
+        for (auto &p : scene.primitives) {
+            if (primitive != p && !std::isinf(p->intersect(ray).distance)) {
+                intersectsPrimitive = true;
+                break;
+            }
+        }
+        if (!intersectsPrimitive) {
+            colour += illumination->illuminate(closestIntersection, light, material);
+        }
+    }
+    if (material.reflectivity > 0) {
+        colour += rayTrace(primitive, {ray.direction - closestIntersection.normal * 2.0 * closestIntersection.normal.dot(ray.direction), closestIntersection.point}, scene) * material.reflectivity;
+    }
+    return colour;
+}
+
 struct SoftwareRenderer : Renderer {
 
     void render(SDL_Window *window, const Scene &scene) const {
@@ -14,42 +53,12 @@ struct SoftwareRenderer : Renderer {
             width, height
         );
         unsigned *pixels;
-        SDL_LockTexture(texture, nullptr, (void **) &pixels, &pitch);
+        SDL_LockTexture(texture, nullptr, reinterpret_cast<void **>(&pixels), &pitch);
         auto aspectRatio = width * 1.0 / height;
         #pragma omp parallel for collapse(2)
         for (auto x = 0; x < width; x++) {
             for (auto y = 0; y < height; y++) {
-                Intersection closestIntersection = NO_INTERSECTION;
-                Illumination *illumination;
-                Material material;
-                Primitive *primitive;
-                auto ray = scene.camera.trace(x * 1.0 / width * aspectRatio - 0.5, y * 1.0 / height - 0.5);
-                for (auto i = 0; i < scene.primitives.size(); i++) {
-                    Intersection intersection = scene.primitives[i]->intersect(ray);
-                    if (!std::isinf(intersection.distance) && intersection.distance < closestIntersection.distance) {
-                        closestIntersection = intersection;
-                        illumination = scene.illuminations[i];
-                        material = scene.materials[i];
-                        primitive = scene.primitives[i];
-                    }
-                }
-                if (!std::isinf(closestIntersection.distance)) {
-                    Vector colour;
-                    for (auto &light : scene.lights) {
-                        auto intersectsPrimitive = false;
-                        auto ray = Ray{(light.position - closestIntersection.point).normalise(), closestIntersection.point};
-                        for (auto &p : scene.primitives) {
-                            if (primitive != p && !std::isinf(p->intersect(ray).distance)) {
-                                intersectsPrimitive = true;
-                                break;
-                            }
-                        }
-                        if (!intersectsPrimitive) {
-                            colour += illumination->illuminate(closestIntersection, light, material);
-                        }
-                    }
-                    pixels[x + y * width] = (unsigned) colour;
-                }
+                pixels[x + y * width] = static_cast<unsigned>(rayTrace(nullptr, scene.camera.trace(x * 1.0 / width * aspectRatio - 0.5, y * 1.0 / height - 0.5), scene));
             }
         }
         SDL_UnlockTexture(texture);
