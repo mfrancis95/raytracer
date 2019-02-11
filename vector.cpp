@@ -32,7 +32,7 @@ Vector &Vector::normalise() {
 }
 
 Vector::operator unsigned() const {
-    return ((unsigned) (x * 0xFF) << 16) | ((unsigned) (y * 0xFF) << 8) | (unsigned) (z * 0xFF);
+    return ((unsigned) (std::min(1.0, x) * 0xFF) << 16) | ((unsigned) (std::min(1.0, y) * 0xFF) << 8) | (unsigned) (std::min(1.0, z) * 0xFF);
 }
 
 Vector Vector::operator*(const double scalar) const {

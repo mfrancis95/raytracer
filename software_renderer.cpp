@@ -23,15 +23,15 @@ static Vector rayTrace(Primitive *ignore, const Ray &ray, const Scene &scene) {
     Vector colour;
     for (auto &light : scene.lights) {
         auto intersectsPrimitive = false;
-        auto ray = Ray{(light.position - closestIntersection.point).normalise(), closestIntersection.point};
+        auto lightRay = Ray{(light.position - closestIntersection.point).normalise(), closestIntersection.point};
         for (auto &p : scene.primitives) {
-            if (primitive != p && !std::isinf(p->intersect(ray).distance)) {
+            if (primitive != p && !std::isinf(p->intersect(lightRay).distance)) {
                 intersectsPrimitive = true;
                 break;
             }
         }
         if (!intersectsPrimitive) {
-            colour += illumination->illuminate(closestIntersection, light, material);
+            colour += illumination->illuminate(closestIntersection, light, material, ray);
         }
     }
     if (material.reflectivity > 0) {
