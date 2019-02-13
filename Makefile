@@ -1,4 +1,4 @@
-all: software_renderer
+all: opengl_renderer software_renderer
 
 camera.o: camera.cpp camera.h ray.h
 	g++ $(FLAGS) -c camera.cpp
@@ -12,6 +12,12 @@ group.o: group.cpp group.h primitive.h
 main.o: main.cpp
 	g++ $(FLAGS) -c main.cpp
 
+opengl_renderer: camera.o group.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
+	g++ $(FLAGS) -o opengl_renderer camera.o group.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
+
+opengl_renderer.o: opengl_renderer.cpp renderer.h
+	g++ $(FLAGS) -c opengl_renderer.cpp
+
 phong.o: illumination.h intersection.h light.h material.h phong.cpp phong.h
 	g++ $(FLAGS) -c phong.cpp
 
@@ -19,7 +25,7 @@ sphere.o: primitive.h sphere.cpp sphere.h
 	g++ $(FLAGS) -c sphere.cpp
 
 software_renderer: camera.o group.o main.o phong.o sphere.o software_renderer.o triangle.o vector.o
-	g++ $(FLAGS) -fopenmp -o software_renderer camera.o group.o main.o phong.o sphere.o software_renderer.o triangle.o vector.o -lGL -lSDL2
+	g++ $(FLAGS) -fopenmp -o software_renderer camera.o group.o main.o phong.o sphere.o software_renderer.o triangle.o vector.o -lSDL2
 
 software_renderer.o: renderer.h software_renderer.cpp
 	g++ $(FLAGS) -c -fopenmp software_renderer.cpp

@@ -7,7 +7,7 @@
 int main() {
     auto window = SDL_CreateWindow(
         "Raytracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 960,
-        0
+        SDL_WINDOW_OPENGL
     );
     auto renderer = createRenderer();
     Scene scene = {{{}, {0, -1, -5}}};
