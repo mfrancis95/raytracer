@@ -9,6 +9,6 @@ Camera::Camera(const Vector &position, const Vector &lookAt) {
     up = (direction * right).normalise();
 }
 
-Ray Camera::trace(const double x, const double y) const {
+Ray Camera::castRay(const double x, const double y) const {
     return {(right * x + up * y + direction).normalise(), position};
 }
