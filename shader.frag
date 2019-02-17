@@ -1,11 +1,15 @@
 #version 440
 
+layout(origin_upper_left) in vec4 gl_FragCoord;
+
 struct Camera {
     vec3 direction;
     vec3 position;
     vec3 right;
     vec3 up;
 };
+
+uniform Camera camera;
 
 struct Intersection {
     float distance;
@@ -33,7 +37,7 @@ struct Sphere {
     float radiusSquared;
 };
 
-Ray castRay(Camera camera, float x, float y) {
+Ray castRay(float x, float y) {
     return Ray(
         normalize(camera.right * x + camera.up * y + camera.direction),
         camera.position
@@ -87,13 +91,12 @@ vec3 phongIlluminate(
 out vec3 colour;
 
 void main() {
-    Camera camera = {{0, 0, -1}, {0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
     Intersection intersection = {0, {0, 0, 0}, {0, 0, 0}};
-    Light light = {{1, 1, 1}, {3, 2, 0}};
+    Light light = {{1, 1, 1}, {4, 2, 0}};
     Material material = {{1, 0, 0}, 10};
-    Sphere sphere = {{0, 0, -5}, 1};
+    Sphere sphere = {{0, -1, -3}, 0.25};
     float aspectRatio = 1280.0 / 960;
-    Ray ray = castRay(camera, gl_FragCoord.x / 1280 * aspectRatio - 0.5, gl_FragCoord.y / 960 - 0.5);
+    Ray ray = castRay(gl_FragCoord.x / 1280 * aspectRatio - 0.5, gl_FragCoord.y / 960 - 0.5);
     if (sphereIntersect(intersection, sphere, ray)) {
         colour = phongIlluminate(intersection, light, material, ray);
     }

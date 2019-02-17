@@ -54,6 +54,10 @@ struct OpenGLRenderer : Renderer {
         );
         glLinkProgram(program);
         glUseProgram(program);
+        glUniform3f(glGetUniformLocation(program, "camera.direction"), scene.camera.direction.x, scene.camera.direction.y, scene.camera.direction.z);
+        glUniform3f(glGetUniformLocation(program, "camera.position"), scene.camera.position.x, scene.camera.position.y, scene.camera.position.z);
+        glUniform3f(glGetUniformLocation(program, "camera.right"), scene.camera.right.x, scene.camera.right.y, scene.camera.right.z);
+        glUniform3f(glGetUniformLocation(program, "camera.up"), scene.camera.up.x, scene.camera.up.y, scene.camera.up.z);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         SDL_GL_SwapWindow(window);
         glDeleteShader(vertexShader);
