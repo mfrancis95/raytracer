@@ -2,10 +2,11 @@
 
 struct Sphere : Primitive {
 
-    double radiusSquared;
     Vector position;
+    double radiusSquared;
 
     Sphere(const Vector &position, const double radius);
     Intersection intersect(const Ray &ray) const;
+    void serialise(void *buffer) const;
 
 };

@@ -30,3 +30,11 @@ Intersection Sphere::intersect(const Ray &ray) const {
     auto point = ray.direction * t0 + ray.origin;
     return {t0, (point - position).normalise(), point};
 }
+
+void Sphere::serialise(void *buffer) const {
+    auto sphere = static_cast<float *>(buffer);
+    sphere[0] = position.x;
+    sphere[1] = position.y;
+    sphere[2] = position.z;
+    sphere[3] = radiusSquared;
+}
