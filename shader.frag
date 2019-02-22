@@ -35,20 +35,35 @@ struct Sphere {
     float radiusSquared;
 };
 
+struct Triangle {
+    vec3 vertex1;
+    vec3 vertex2;
+    vec3 vertex3;
+};
+
+struct Primitive {
+    int type;
+    vec3 spherePosition;
+    float sphereRadiusSquared;
+    vec3 triangleVertex1;
+    vec3 triangleVertex2;
+    vec3 triangleVertex3;
+};
+
 uniform Camera camera;
 uniform int numLights;
 uniform int numPrimitives;
 
-layout(binding = 0, packed) buffer LightStorage {
+layout(binding = 0, std430) buffer LightStorage {
     Light lights[];
 };
 
-layout(binding = 1, packed) buffer MaterialStorage {
+layout(binding = 1, std430) buffer MaterialStorage {
     Material materials[];
 };
 
-layout(binding = 2, packed) buffer PrimitiveStorage {
-    Sphere primitives[];
+layout(binding = 2, std430) buffer PrimitiveStorage {
+    Primitive primitives[];
 };
 
 out vec3 colour;
@@ -60,7 +75,7 @@ Ray castRay(float x, float y) {
     );
 }
 
-bool sphereIntersect(out Intersection intersection, Sphere sphere, Ray ray) {
+bool sphereIntersect(Sphere sphere, Ray ray, out Intersection intersection) {
     vec3 difference = ray.origin - sphere.position;
     float b = 2 * dot(difference, ray.direction);
     float disc = b * b - 4 * (dot(difference, difference) - sphere.radiusSquared);
@@ -90,6 +105,48 @@ bool sphereIntersect(out Intersection intersection, Sphere sphere, Ray ray) {
     return true;
 }
 
+bool triangleIntersect(Triangle triangle, Ray ray, out Intersection intersection) {
+    vec3 v0v1 = triangle.vertex2 - triangle.vertex1;
+    vec3 v0v2 = triangle.vertex3 - triangle.vertex1;
+    vec3 pVec = cross(ray.direction, v0v2);
+    float det = dot(v0v1, pVec);
+    if (abs(det) < 1e-8) {
+        return false;
+    }
+    float invDet = 1 / det;
+    vec3 tVec = ray.origin - triangle.vertex1;
+    float u = dot(tVec, pVec) * invDet;
+    if (u < 0 || u > 1) {
+        return false;
+    }
+    vec3 qVec = cross(tVec, v0v1);
+    float v = dot(ray.direction, qVec) * invDet;
+    if (v < 0 || u + v > 1) {
+        return false;
+    }
+    float t = dot(v0v2, qVec) * invDet;
+    if (t < 0) {
+        return false;
+    }
+    intersection.distance = t;
+    intersection.normal = normalize(v0v1 * v0v2);
+    intersection.point = ray.direction * t + ray.origin;
+    return true;
+}
+
+bool intersect(Primitive primitive, Ray ray, out Intersection intersection) {
+    if (primitive.type == 0) {
+        return sphereIntersect(
+            Sphere(primitive.spherePosition, primitive.sphereRadiusSquared),
+            ray, intersection
+        );
+    }
+    return triangleIntersect(
+        Triangle(primitive.triangleVertex1, primitive.triangleVertex2, primitive.triangleVertex3),
+        ray, intersection
+    );
+}
+
 vec3 phongIlluminate(
     Intersection intersection, Light light, Material material, Ray ray
 ) {
@@ -110,28 +167,35 @@ void main() {
     Intersection intersection = closestIntersection;
     int primitive = -1;
     float aspectRatio = 1280.0 / 960;
-    Ray ray = castRay(gl_FragCoord.x / 1280 * aspectRatio - 0.5, gl_FragCoord.y / 960 - 0.5);
+    Ray ray = castRay(
+        gl_FragCoord.x / 1280 * aspectRatio - 0.5, gl_FragCoord.y / 960 - 0.5
+    );
     for (int i = 0; i < numPrimitives; i++) {
-        if (sphereIntersect(intersection, primitives[i], ray) && intersection.distance < closestIntersection.distance) {
+        if (intersect(primitives[i], ray, intersection) && intersection.distance < closestIntersection.distance) {
             closestIntersection = intersection;
             primitive = i;
         }
     }
     if (primitive != -1) {
         for (int i = 0; i < numLights; i++) {
-            Ray lightRay = {normalize(lights[i].position - closestIntersection.point), closestIntersection.point};
+            Ray lightRay = {
+                normalize(lights[i].position - closestIntersection.point),
+                closestIntersection.point
+            };
             bool intersectsPrimitive = false;
             for (int j = 0; j < numPrimitives; j++) {
                 if (j == primitive) {
                     continue;
                 }
-                if (sphereIntersect(intersection, primitives[j], lightRay)) {
+                if (intersect(primitives[j], lightRay, intersection)) {
                     intersectsPrimitive = true;
                     break;
                 }
             }
             if (!intersectsPrimitive) {
-                colour += phongIlluminate(closestIntersection, lights[i], materials[primitive], ray);
+                colour += phongIlluminate(
+                    closestIntersection, lights[i], materials[primitive], ray
+                );
             }
         }
     }

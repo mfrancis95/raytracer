@@ -6,5 +6,6 @@ struct Triangle : Primitive {
 
     Triangle(const Vector &vertex1, const Vector &vertex2, const Vector &vertex3);
     Intersection intersect(const Ray &ray) const;
+    void serialise(void *buffer) const;
 
 };

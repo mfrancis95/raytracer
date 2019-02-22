@@ -58,6 +58,13 @@ Vector &Vector::operator+=(const Vector &vector) {
     return *this;
 }
 
+void Vector::serialise(void *buffer) const {
+    auto data = static_cast<float *>(buffer);
+    data[0] = x;
+    data[1] = y;
+    data[2] = z;
+}
+
 std::ostream& operator<<(std::ostream &os, const Vector &vector) {
     return os << "(" << vector.x << ", " << vector.y << ", " << vector.z << ")";
 }

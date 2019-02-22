@@ -22,14 +22,16 @@ int main() {
         scene.materials.push_back({0xFF000, 0, 5});
         scene.primitives.push_back(new Sphere{{1, -0.5, -3.5}, 0.25});
     }
-    /*{
+    {
         scene.illuminations.push_back(new Phong);
         scene.materials.push_back({0xFF, 1, 100});
-        scene.primitives.push_back(new Group{{
-            new Triangle{{-2, -1, -6}, {-2, -1, -2}, {2, -1, -2}},
-            new Triangle{{2, -1, -6}, {-2, -1, -6}, {2, -1, -2}}
-        }});
-    }*/
+        scene.primitives.push_back(new Triangle{{-2, -1, -6}, {-2, -1, -2}, {2, -1, -2}});
+    }
+    {
+        scene.illuminations.push_back(new Phong);
+        scene.materials.push_back({0xFF, 1, 100});
+        scene.primitives.push_back(new Triangle{{2, -1, -6}, {-2, -1, -6}, {2, -1, -2}});
+    }
     renderer->render(window, scene);
     SDL_Event event;
     auto quit = false;

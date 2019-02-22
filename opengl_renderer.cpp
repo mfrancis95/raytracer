@@ -46,43 +46,35 @@ struct OpenGLRenderer : Renderer {
         glVertexAttribPointer(0, 2, GL_BYTE, GL_FALSE, 0, nullptr);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[1]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffers[1]);
-        auto lightData = operator new(scene.lights.size() * 24);
+        auto lightData = operator new(scene.lights.size() * 32);
         auto offset = 0;
         for (auto &light : scene.lights) {
-            auto data = static_cast<float *>(lightData + offset);
-            data[0] = light.colour.x;
-            data[1] = light.colour.y;
-            data[2] = light.colour.z;
-            data[3] = light.position.x;
-            data[4] = light.position.y;
-            data[5] = light.position.z;
-            offset += 24;
+            light.colour.serialise(lightData + offset);
+            light.position.serialise(lightData + offset + 16);
+            offset += 32;
         }
-        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.lights.size() * 24, lightData, 0);
+        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.lights.size() * 32, lightData, 0);
         operator delete(lightData);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[2]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[2]);
         auto materialData = operator new(scene.materials.size() * 16);
         offset = 0;
         for (auto &material : scene.materials) {
-            auto data = static_cast<float *>(materialData + offset);
-            data[0] = material.colour.x;
-            data[1] = material.colour.y;
-            data[2] = material.colour.z;
-            data[3] = material.shininess;
+            material.colour.serialise(materialData + offset);
+            *static_cast<float *>(materialData + offset + 12) = material.shininess;
             offset += 16;
         }
         glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.materials.size() * 16, materialData, 0);
         operator delete(materialData);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[3]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[3]);
-        auto primitiveData = operator new(scene.primitives.size() * 16);
+        auto primitiveData = operator new(scene.primitives.size() * 80);
         offset = 0;
         for (auto &primitive: scene.primitives) {
             primitive->serialise(primitiveData + offset);
-            offset += 16;
+            offset += 80;
         }
-        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.primitives.size() * 16, primitiveData, 0);
+        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.primitives.size() * 80, primitiveData, 0);
         operator delete(primitiveData);
         glAttachShader(
             program = glCreateProgram(),

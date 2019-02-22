@@ -32,9 +32,7 @@ Intersection Sphere::intersect(const Ray &ray) const {
 }
 
 void Sphere::serialise(void *buffer) const {
-    auto sphere = static_cast<float *>(buffer);
-    sphere[0] = position.x;
-    sphere[1] = position.y;
-    sphere[2] = position.z;
-    sphere[3] = radiusSquared;
+    *static_cast<int *>(buffer) = 0;
+    position.serialise(buffer + 16);
+    *static_cast<float *>(buffer + 28) = radiusSquared;
 }

@@ -31,3 +31,10 @@ Intersection Triangle::intersect(const Ray &ray) const {
     }
     return {t, (v0v1 * v0v2).normalise(), ray.direction * t + ray.origin};
 }
+
+void Triangle::serialise(void *buffer) const {
+    *static_cast<int *>(buffer) = 1;
+    vertex1.serialise(buffer + 32);
+    vertex2.serialise(buffer + 48);
+    vertex3.serialise(buffer + 64);
+}

@@ -20,6 +20,7 @@ struct Vector {
     Vector operator-(const Vector &vector) const;
     Vector operator+(const Vector &vector) const;
     Vector &operator+=(const Vector &vector);
+    void serialise(void *buffer) const;
 
 };
 
