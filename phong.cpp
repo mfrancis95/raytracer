@@ -8,11 +8,11 @@ Vector Phong::illuminate(
 ) const {
     auto L = (light.position - intersection.point).normalise();
     auto LdotN = std::max(0.0, L.dot(intersection.normal));
-    Vector colour = material.colour * LdotN;
-    if (LdotN) {
+    Vector colour = material.colour * LdotN * material.diffuse;
+    if (LdotN && material.specular) {
         auto R = (intersection.normal * 2.0 * LdotN - L).normalise();
         auto V = (ray.origin - intersection.point).normalise();
-        colour += light.colour * std::pow(std::max(0.0, R.dot(V)), material.shininess);
+        colour += light.colour * std::pow(std::max(0.0, R.dot(V)), material.shininess) * material.specular;
     }
     return colour;
 }

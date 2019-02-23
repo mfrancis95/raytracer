@@ -32,7 +32,9 @@ Vector &Vector::normalise() {
 }
 
 Vector::operator unsigned() const {
-    return ((unsigned) (std::min(1.0, x) * 0xFF) << 16) | ((unsigned) (std::min(1.0, y) * 0xFF) << 8) | (unsigned) (std::min(1.0, z) * 0xFF);
+    return ((unsigned) (std::min(1.0, x) * 0xFF) << 16) |
+    ((unsigned) (std::min(1.0, y) * 0xFF) << 8) |
+    (unsigned) (std::min(1.0, z) * 0xFF);
 }
 
 Vector Vector::operator*(const double scalar) const {
@@ -40,7 +42,10 @@ Vector Vector::operator*(const double scalar) const {
 }
 
 Vector Vector::operator*(const Vector &vector) const {
-    return {y * vector.z - z * vector.y, z * vector.x - x * vector.z, x * vector.y - y * vector.x};
+    return {
+        y * vector.z - z * vector.y, z * vector.x - x * vector.z,
+        x * vector.y - y * vector.x
+    };
 }
 
 Vector Vector::operator-(const Vector &vector) const {
@@ -58,8 +63,8 @@ Vector &Vector::operator+=(const Vector &vector) {
     return *this;
 }
 
-void Vector::serialise(void *buffer) const {
-    auto data = static_cast<float *>(buffer);
+void Vector::serialise(char *buffer) const {
+    auto data = reinterpret_cast<float *>(buffer);
     data[0] = x;
     data[1] = y;
     data[2] = z;

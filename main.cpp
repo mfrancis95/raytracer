@@ -10,26 +10,26 @@ int main() {
         SDL_WINDOW_OPENGL
     );
     auto renderer = createRenderer();
-    Scene scene = {{{}, {0, -1, -5}}};
+    Scene scene = {0x11, {{}, {0, -1, -5}}};
     scene.lights.push_back({0xFFFFFF, {4, 2, 0}});
     {
         scene.illuminations.push_back(new Phong);
-        scene.materials.push_back({0xFF0000, 0, 25});
+        scene.materials.push_back({0xFF0000, 1});
         scene.primitives.push_back(new Sphere{{0, -1, -3}, 0.25});
     }
     {
         scene.illuminations.push_back(new Phong);
-        scene.materials.push_back({0xFF000, 0, 5});
+        scene.materials.push_back({0xFF000, 0.5, 0, 5, 0.5});
         scene.primitives.push_back(new Sphere{{1, -0.5, -3.5}, 0.25});
     }
     {
         scene.illuminations.push_back(new Phong);
-        scene.materials.push_back({0xFF, 1, 100});
+        scene.materials.push_back({0x555555, 1, 0.5});
         scene.primitives.push_back(new Triangle{{-2, -1, -6}, {-2, -1, -2}, {2, -1, -2}});
     }
     {
         scene.illuminations.push_back(new Phong);
-        scene.materials.push_back({0xFF, 1, 100});
+        scene.materials.push_back({0x555555, 1, 0.5});
         scene.primitives.push_back(new Triangle{{2, -1, -6}, {-2, -1, -6}, {2, -1, -2}});
     }
     renderer->render(window, scene);

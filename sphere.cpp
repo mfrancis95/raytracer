@@ -31,8 +31,8 @@ Intersection Sphere::intersect(const Ray &ray) const {
     return {t0, (point - position).normalise(), point};
 }
 
-void Sphere::serialise(void *buffer) const {
-    *static_cast<int *>(buffer) = 0;
+void Sphere::serialise(char *buffer) const {
+    *reinterpret_cast<int *>(buffer) = 0;
     position.serialise(buffer + 16);
-    *static_cast<float *>(buffer + 28) = radiusSquared;
+    *reinterpret_cast<float *>(buffer + 28) = radiusSquared;
 }

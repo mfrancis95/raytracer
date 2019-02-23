@@ -4,6 +4,10 @@
 #include <GL/gl.h>
 #include "renderer.h"
 
+#define LIGHT_SIZE 32
+#define MATERIAL_SIZE 32
+#define PRIMITIVE_SIZE 80
+
 static const char *readFile(const char *file) {
     std::ifstream stream{file, std::ios::ate};
     std::streamoff length = stream.tellg();
@@ -46,36 +50,44 @@ struct OpenGLRenderer : Renderer {
         glVertexAttribPointer(0, 2, GL_BYTE, GL_FALSE, 0, nullptr);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[1]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffers[1]);
-        auto lightData = operator new(scene.lights.size() * 32);
+        char lightData[scene.lights.size() * LIGHT_SIZE];
         auto offset = 0;
         for (auto &light : scene.lights) {
             light.colour.serialise(lightData + offset);
             light.position.serialise(lightData + offset + 16);
-            offset += 32;
+            offset += LIGHT_SIZE;
         }
-        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.lights.size() * 32, lightData, 0);
-        operator delete(lightData);
+        glBufferStorage(
+            GL_SHADER_STORAGE_BUFFER, scene.lights.size() * LIGHT_SIZE,
+            lightData, 0
+        );
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[2]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, buffers[2]);
-        auto materialData = operator new(scene.materials.size() * 16);
+        char materialData[scene.materials.size() * MATERIAL_SIZE];
         offset = 0;
         for (auto &material : scene.materials) {
             material.colour.serialise(materialData + offset);
-            *static_cast<float *>(materialData + offset + 12) = material.shininess;
-            offset += 16;
+            *reinterpret_cast<float *>(materialData + offset + 12) = material.diffuse;
+            *reinterpret_cast<float *>(materialData + offset + 16) = material.shininess;
+            *reinterpret_cast<float *>(materialData + offset + 20) = material.specular;
+            offset += MATERIAL_SIZE;
         }
-        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.materials.size() * 16, materialData, 0);
-        operator delete(materialData);
+        glBufferStorage(
+            GL_SHADER_STORAGE_BUFFER, scene.materials.size() * MATERIAL_SIZE,
+            materialData, 0
+        );
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffers[3]);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, buffers[3]);
-        auto primitiveData = operator new(scene.primitives.size() * 80);
+        char primitiveData[scene.primitives.size() * PRIMITIVE_SIZE];
         offset = 0;
         for (auto &primitive: scene.primitives) {
             primitive->serialise(primitiveData + offset);
-            offset += 80;
+            offset += PRIMITIVE_SIZE;
         }
-        glBufferStorage(GL_SHADER_STORAGE_BUFFER, scene.primitives.size() * 80, primitiveData, 0);
-        operator delete(primitiveData);
+        glBufferStorage(
+            GL_SHADER_STORAGE_BUFFER, scene.primitives.size() * PRIMITIVE_SIZE,
+            primitiveData, 0
+        );
         glAttachShader(
             program = glCreateProgram(),
             vertexShader = setupShader(GL_VERTEX_SHADER, "shader.vert")
@@ -86,12 +98,35 @@ struct OpenGLRenderer : Renderer {
         );
         glLinkProgram(program);
         glUseProgram(program);
-        glUniform3f(glGetUniformLocation(program, "camera.direction"), scene.camera.direction.x, scene.camera.direction.y, scene.camera.direction.z);
-        glUniform3f(glGetUniformLocation(program, "camera.position"), scene.camera.position.x, scene.camera.position.y, scene.camera.position.z);
-        glUniform3f(glGetUniformLocation(program, "camera.right"), scene.camera.right.x, scene.camera.right.y, scene.camera.right.z);
-        glUniform3f(glGetUniformLocation(program, "camera.up"), scene.camera.up.x, scene.camera.up.y, scene.camera.up.z);
-        glUniform1i(glGetUniformLocation(program, "numLights"), scene.lights.size());
-        glUniform1i(glGetUniformLocation(program, "numPrimitives"), scene.primitives.size());
+        glUniform3f(
+            glGetUniformLocation(program, "ambient"), scene.ambient.x,
+            scene.ambient.y, scene.ambient.z
+        );
+        glUniform3f(
+            glGetUniformLocation(program, "camera.direction"),
+            scene.camera.direction.x, scene.camera.direction.y,
+            scene.camera.direction.z
+        );
+        glUniform3f(
+            glGetUniformLocation(program, "camera.position"),
+            scene.camera.position.x, scene.camera.position.y,
+            scene.camera.position.z
+        );
+        glUniform3f(
+            glGetUniformLocation(program, "camera.right"), scene.camera.right.x,
+            scene.camera.right.y, scene.camera.right.z
+        );
+        glUniform3f(
+            glGetUniformLocation(program, "camera.up"), scene.camera.up.x,
+            scene.camera.up.y, scene.camera.up.z
+        );
+        glUniform1i(
+            glGetUniformLocation(program, "numLights"), scene.lights.size()
+        );
+        glUniform1i(
+            glGetUniformLocation(program, "numPrimitives"),
+            scene.primitives.size()
+        );
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         SDL_GL_SwapWindow(window);
         glDeleteShader(vertexShader);

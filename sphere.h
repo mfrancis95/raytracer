@@ -7,6 +7,6 @@ struct Sphere : Primitive {
 
     Sphere(const Vector &position, const double radius);
     Intersection intersect(const Ray &ray) const;
-    void serialise(void *buffer) const;
+    void serialise(char *buffer) const;
 
 };

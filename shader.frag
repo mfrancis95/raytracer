@@ -22,7 +22,9 @@ struct Light {
 
 struct Material {
     vec3 colour;
+    float diffuse;
     float shininess;
+    float specular;
 };
 
 struct Ray {
@@ -50,6 +52,7 @@ struct Primitive {
     vec3 triangleVertex3;
 };
 
+uniform vec3 ambient;
 uniform Camera camera;
 uniform int numLights;
 uniform int numPrimitives;
@@ -142,8 +145,10 @@ bool intersect(Primitive primitive, Ray ray, out Intersection intersection) {
         );
     }
     return triangleIntersect(
-        Triangle(primitive.triangleVertex1, primitive.triangleVertex2, primitive.triangleVertex3),
-        ray, intersection
+        Triangle(
+            primitive.triangleVertex1, primitive.triangleVertex2,
+            primitive.triangleVertex3
+        ), ray, intersection
     );
 }
 
@@ -152,13 +157,13 @@ vec3 phongIlluminate(
 ) {
     vec3 L = normalize(light.position - intersection.point);
     float LdotN = max(0, dot(L, intersection.normal));
-    vec3 colour = material.colour * LdotN;
-    if (LdotN > 0) {
+    vec3 c = material.colour * LdotN * material.diffuse;
+    if (LdotN > 0 && material.specular > 0) {
         vec3 R = normalize(intersection.normal * 2.0 * LdotN - L);
         vec3 V = normalize(ray.origin - intersection.point);
-        colour += light.colour * pow(max(0.0, dot(R, V)), material.shininess);
+        c += light.colour * pow(max(0.0, dot(R, V)), material.shininess) * material.specular;
     }
-    return colour;
+    return c;
 }
 
 void main() {
@@ -171,32 +176,33 @@ void main() {
         gl_FragCoord.x / 1280 * aspectRatio - 0.5, gl_FragCoord.y / 960 - 0.5
     );
     for (int i = 0; i < numPrimitives; i++) {
-        if (intersect(primitives[i], ray, intersection) && intersection.distance < closestIntersection.distance) {
+        if (intersect(primitives[i], ray, intersection) &&
+            intersection.distance < closestIntersection.distance) {
             closestIntersection = intersection;
             primitive = i;
         }
     }
-    if (primitive != -1) {
-        for (int i = 0; i < numLights; i++) {
-            Ray lightRay = {
-                normalize(lights[i].position - closestIntersection.point),
-                closestIntersection.point
-            };
-            bool intersectsPrimitive = false;
-            for (int j = 0; j < numPrimitives; j++) {
-                if (j == primitive) {
-                    continue;
-                }
-                if (intersect(primitives[j], lightRay, intersection)) {
-                    intersectsPrimitive = true;
-                    break;
-                }
+    if (primitive == -1) {
+        return;
+    }
+    colour = ambient;
+    for (int i = 0; i < numLights; i++) {
+        Ray lightRay = {
+            normalize(lights[i].position - closestIntersection.point),
+            closestIntersection.point
+        };
+        bool intersectsPrimitive = false;
+        for (int j = 0; j < numPrimitives; j++) {
+            if (j != primitive &&
+                intersect(primitives[j], lightRay, intersection)) {
+                intersectsPrimitive = true;
+                break;
             }
-            if (!intersectsPrimitive) {
-                colour += phongIlluminate(
-                    closestIntersection, lights[i], materials[primitive], ray
-                );
-            }
+        }
+        if (!intersectsPrimitive) {
+            colour += phongIlluminate(
+                closestIntersection, lights[i], materials[primitive], ray
+            );
         }
     }
 }

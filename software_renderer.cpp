@@ -6,7 +6,7 @@ static Vector rayTrace(Primitive *ignore, const Ray &ray, const Scene &scene) {
     Illumination *illumination;
     Material material;
     Primitive *primitive;
-    for (auto i = 0; i < scene.primitives.size(); i++) {
+    for (auto i = 0U; i < scene.primitives.size(); i++) {
         if (ignore != scene.primitives[i]) {
             Intersection intersection = scene.primitives[i]->intersect(ray);
             if (!std::isinf(intersection.distance) && intersection.distance < closestIntersection.distance) {
@@ -20,10 +20,13 @@ static Vector rayTrace(Primitive *ignore, const Ray &ray, const Scene &scene) {
     if (std::isinf(closestIntersection.distance)) {
         return {};
     }
-    Vector colour;
+    Vector colour = scene.ambient;
     for (auto &light : scene.lights) {
         auto intersectsPrimitive = false;
-        auto lightRay = Ray{(light.position - closestIntersection.point).normalise(), closestIntersection.point};
+        auto lightRay = Ray{
+            (light.position - closestIntersection.point).normalise(),
+            closestIntersection.point
+        };
         for (auto &p : scene.primitives) {
             if (primitive != p && !std::isinf(p->intersect(lightRay).distance)) {
                 intersectsPrimitive = true;
@@ -31,7 +34,9 @@ static Vector rayTrace(Primitive *ignore, const Ray &ray, const Scene &scene) {
             }
         }
         if (!intersectsPrimitive) {
-            colour += illumination->illuminate(closestIntersection, light, material, ray);
+            colour += illumination->illuminate(
+                closestIntersection, light, material, ray
+            );
         }
     }
     if (material.reflectivity > 0) {
@@ -53,7 +58,9 @@ struct SoftwareRenderer : Renderer {
             width, height
         );
         unsigned *pixels;
-        SDL_LockTexture(texture, nullptr, reinterpret_cast<void **>(&pixels), &pitch);
+        SDL_LockTexture(
+            texture, nullptr, reinterpret_cast<void **>(&pixels), &pitch
+        );
         auto aspectRatio = width * 1.0 / height;
         #pragma omp parallel for collapse(2)
         for (auto x = 0; x < width; x++) {

@@ -7,7 +7,7 @@
 struct Primitive {
 
     virtual Intersection intersect(const Ray &ray) const = 0;
-    virtual void serialise(void *buffer) const = 0;
+    virtual void serialise(char *buffer) const = 0;
 
 };
 

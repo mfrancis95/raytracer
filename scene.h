@@ -4,6 +4,7 @@
 #include "primitive.h"
 
 typedef struct {
+    Vector ambient;
     Camera camera;
     std::vector<Illumination *> illuminations;
     std::vector<Light> lights;

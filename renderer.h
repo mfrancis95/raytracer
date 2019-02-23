@@ -3,6 +3,7 @@
 
 struct Renderer {
 
+    virtual ~Renderer() = default;
     virtual void render(SDL_Window *window, const Scene &scene) const = 0;
 
 };
