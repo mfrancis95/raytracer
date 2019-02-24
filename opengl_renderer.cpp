@@ -1,7 +1,9 @@
 #define GL_GLEXT_PROTOTYPES
 
+#include <ctime>
 #include <fstream>
 #include <GL/gl.h>
+#include <iostream>
 #include "renderer.h"
 
 #define LIGHT_SIZE 32
@@ -127,7 +129,11 @@ struct OpenGLRenderer : Renderer {
             glGetUniformLocation(program, "numPrimitives"),
             scene.primitives.size()
         );
+        struct timespec end, start;
+        clock_gettime(CLOCK_MONOTONIC, &start);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        std::cout << (end.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         SDL_GL_SwapWindow(window);
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
