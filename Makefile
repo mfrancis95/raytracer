@@ -1,19 +1,28 @@
-all: opengl_renderer software_renderer
+all: compute_renderer fragment_renderer software_renderer
 
 camera.o: camera.cpp camera.h ray.h
 	g++ $(FLAGS) -c camera.cpp
 
+compute_renderer: camera.o compute_renderer.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
+	g++ $(FLAGS) -o compute_renderer camera.o compute_renderer.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
+
+compute_renderer.o: compute_renderer.cpp opengl_renderer.h
+	g++ $(FLAGS) -c compute_renderer.cpp
+
 clean:
-	rm -f *.o software_renderer
+	rm -f *.o compute_renderer fragment_renderer software_renderer
+
+fragment_renderer: camera.o fragment_renderer.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
+	g++ $(FLAGS) -o fragment_renderer camera.o fragment_renderer.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
+
+fragment_renderer.o: fragment_renderer.cpp opengl_renderer.h
+	g++ $(FLAGS) -c fragment_renderer.cpp
 
 group.o: group.cpp group.h primitive.h
 	g++ $(FLAGS) -c group.cpp
 
 main.o: main.cpp
 	g++ $(FLAGS) -c main.cpp
-
-opengl_renderer: camera.o group.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
-	g++ $(FLAGS) -o opengl_renderer camera.o group.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
 
 opengl_renderer.o: opengl_renderer.cpp renderer.h
 	g++ $(FLAGS) -c opengl_renderer.cpp

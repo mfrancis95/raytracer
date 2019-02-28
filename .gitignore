@@ -1,2 +1,4 @@
 *.o
+compute_renderer
+fragment_renderer
 software_renderer
