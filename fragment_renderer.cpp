@@ -2,10 +2,6 @@
 #include <iostream>
 #include "opengl_renderer.h"
 
-#define LIGHT_SIZE 32
-#define MATERIAL_SIZE 32
-#define PRIMITIVE_SIZE 80
-
 struct FragmentRenderer : OpenGLRenderer {
 
     void render(SDL_Window *window, const Scene &scene) const {
@@ -69,43 +65,31 @@ struct FragmentRenderer : OpenGLRenderer {
         );
         glAttachShader(
             program = glCreateProgram(),
-            vertexShader = setupShader(GL_VERTEX_SHADER, "shader.vert")
+            vertexShader = setupShader(GL_VERTEX_SHADER, {"shader.vert"})
         );
         glAttachShader(
             program,
-            fragmentShader = setupShader(GL_FRAGMENT_SHADER, "shader.frag")
+            fragmentShader = setupShader(GL_FRAGMENT_SHADER, {
+                "include.shader", "shader.frag"
+            })
         );
         glLinkProgram(program);
         glUseProgram(program);
+        glUniform3f(0, scene.ambient.x, scene.ambient.y, scene.ambient.z);
         glUniform3f(
-            glGetUniformLocation(program, "ambient"), scene.ambient.x,
-            scene.ambient.y, scene.ambient.z
-        );
-        glUniform3f(
-            glGetUniformLocation(program, "camera.direction"),
-            scene.camera.direction.x, scene.camera.direction.y,
+            1, scene.camera.direction.x, scene.camera.direction.y,
             scene.camera.direction.z
         );
         glUniform3f(
-            glGetUniformLocation(program, "camera.position"),
-            scene.camera.position.x, scene.camera.position.y,
+            2, scene.camera.position.x, scene.camera.position.y,
             scene.camera.position.z
         );
         glUniform3f(
-            glGetUniformLocation(program, "camera.right"), scene.camera.right.x,
-            scene.camera.right.y, scene.camera.right.z
+            3, scene.camera.right.x, scene.camera.right.y, scene.camera.right.z
         );
-        glUniform3f(
-            glGetUniformLocation(program, "camera.up"), scene.camera.up.x,
-            scene.camera.up.y, scene.camera.up.z
-        );
-        glUniform1i(
-            glGetUniformLocation(program, "numLights"), scene.lights.size()
-        );
-        glUniform1i(
-            glGetUniformLocation(program, "numPrimitives"),
-            scene.primitives.size()
-        );
+        glUniform3f(4, scene.camera.up.x, scene.camera.up.y, scene.camera.up.z);
+        glUniform1i(5, scene.lights.size());
+        glUniform1i(6, scene.primitives.size());
         struct timespec end, start;
         clock_gettime(CLOCK_MONOTONIC, &start);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

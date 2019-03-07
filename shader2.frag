@@ -2,7 +2,7 @@
 
 layout(origin_upper_left) in vec4 gl_FragCoord;
 
-layout(binding = 0, std430) buffer PixelStorage {
+layout(binding = 3, std430) buffer PixelStorage {
     vec3 pixels[];
 };
 
