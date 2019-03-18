@@ -1,7 +1,7 @@
 #include <fstream>
 #include "opengl_renderer.h"
 
-const GLchar *OpenGLRenderer::readFile(const char *file) const {
+const char *OpenGLRenderer::readFile(const char *file) const {
     std::ifstream stream{file, std::ios::ate};
     std::streamoff length = stream.tellg();
     stream.seekg(0, std::ios::beg);

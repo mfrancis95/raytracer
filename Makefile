@@ -1,4 +1,4 @@
-all: compute_renderer fragment_renderer software_renderer
+all: compute_renderer fragment_renderer opencl_renderer software_renderer
 
 camera.o: camera.cpp camera.h ray.h
 	g++ $(FLAGS) -c camera.cpp
@@ -23,6 +23,12 @@ group.o: group.cpp group.h primitive.h
 
 main.o: main.cpp
 	g++ $(FLAGS) -c main.cpp
+
+opencl_renderer: camera.o main.o opencl_renderer.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
+	g++ $(FLAGS) -o opencl_renderer camera.o main.o opencl_renderer.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lOpenCL -lSDL2
+
+opencl_renderer.o: opencl_renderer.cpp opengl_renderer.h
+	g++ $(FLAGS) -c opencl_renderer.cpp
 
 opengl_renderer.o: opengl_renderer.cpp renderer.h
 	g++ $(FLAGS) -c opengl_renderer.cpp
