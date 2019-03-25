@@ -100,6 +100,7 @@ struct ComputeRenderer : OpenGLRenderer {
         );
         glLinkProgram(fragmentProgram);
         glDispatchCompute(1280, 960, 1);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glUseProgram(fragmentProgram);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         SDL_GL_SwapWindow(window);
