@@ -19,9 +19,9 @@ GLuint OpenGLRenderer::setupShader(const GLint type, std::vector<const char *> f
     }
     glShaderSource(shader, files.size(), sources, nullptr);
     glCompileShader(shader);
-    char buffer[255];
+    /*char buffer[255];
     glGetShaderInfoLog(shader, 255, nullptr, buffer);
-    printf("%s\n", buffer);
+    printf("%s\n", buffer);*/
     for (auto i = 0; i < files.size(); i++) {
         delete [] sources[i];
     }

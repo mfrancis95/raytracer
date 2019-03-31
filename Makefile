@@ -10,7 +10,7 @@ compute_renderer.o: compute_renderer.cpp opengl_renderer.h
 	g++ $(FLAGS) -c compute_renderer.cpp
 
 clean:
-	rm -f *.o compute_renderer fragment_renderer software_renderer
+	rm -f *.o compute_renderer fragment_renderer opencl_renderer software_renderer
 
 fragment_renderer: camera.o fragment_renderer.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
 	g++ $(FLAGS) -o fragment_renderer camera.o fragment_renderer.o main.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
