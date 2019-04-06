@@ -9,7 +9,7 @@ void main() {
     int primitive = -1;
     float aspectRatio = 1280.0 / 960;
     Ray ray = castRay(
-        gl_FragCoord.x / 1280 * aspectRatio - 0.5, gl_FragCoord.y / 960 - 0.5
+        (gl_FragCoord.x / 1280 - 0.5) * aspectRatio, gl_FragCoord.y / 960 - 0.5
     );
     for (int i = 0; i < numPrimitives; i++) {
         if (intersect(primitives[i], ray, intersection) &&

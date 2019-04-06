@@ -1,4 +1,5 @@
 *.o
 compute_renderer
 fragment_renderer
+opencl_renderer
 software_renderer

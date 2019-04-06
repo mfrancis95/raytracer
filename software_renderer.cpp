@@ -70,7 +70,7 @@ struct SoftwareRenderer : Renderer {
         #pragma omp parallel for collapse(2)
         for (auto x = 0; x < width; x++) {
             for (auto y = 0; y < height; y++) {
-                pixels[x + y * width] = static_cast<unsigned>(rayTrace(nullptr, scene.camera.castRay(x * 1.0 / width * aspectRatio - 0.5, y * 1.0 / height - 0.5), scene));
+                pixels[x + y * width] = static_cast<unsigned>(rayTrace(nullptr, scene.camera.castRay(((x * 1.0 / width) - 0.5) * aspectRatio, y * 1.0 / height - 0.5), scene));
             }
         }
         clock_gettime(CLOCK_MONOTONIC, &end);
