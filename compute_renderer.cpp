@@ -1,3 +1,4 @@
+#include <ctime>
 #include "opengl_renderer.h"
 
 struct ComputeRenderer : OpenGLRenderer {
@@ -99,11 +100,23 @@ struct ComputeRenderer : OpenGLRenderer {
             fragmentShader = setupShader(GL_FRAGMENT_SHADER, {"shader2.frag"})
         );
         glLinkProgram(fragmentProgram);
+        struct timespec end1, end2, end3, end4, end5, start;
+        clock_gettime(CLOCK_MONOTONIC, &start);
         glDispatchCompute(1280, 960, 1);
+        clock_gettime(CLOCK_MONOTONIC, &end1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        clock_gettime(CLOCK_MONOTONIC, &end2);
         glUseProgram(fragmentProgram);
+        clock_gettime(CLOCK_MONOTONIC, &end3);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        clock_gettime(CLOCK_MONOTONIC, &end4);
         SDL_GL_SwapWindow(window);
+        clock_gettime(CLOCK_MONOTONIC, &end5);
+        std::cout << "glDispatchCompute\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "glMemoryBarrier\t\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "glUseProgram\t\t" << (end3.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "glDrawArrays\t\t" << (end4.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "SDL_GL_SwapWindow\t" << (end5.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         glDeleteProgram(fragmentProgram);

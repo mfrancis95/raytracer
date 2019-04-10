@@ -82,8 +82,8 @@ bool sphereIntersect(Sphere sphere, Ray ray, out Intersection intersection) {
         return false;
     }
     float discSqrt = sqrt(disc);
-    float t0 = (-b - discSqrt) / 2;
-    float t1 = (-b + discSqrt) / 2;
+    float t0 = (-b - discSqrt) * 0.5;
+    float t1 = (-b + discSqrt) * 0.5;
     if (t0 > t1) {
         float temp = t0;
         t0 = t1;

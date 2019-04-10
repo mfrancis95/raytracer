@@ -90,12 +90,14 @@ struct FragmentRenderer : OpenGLRenderer {
         glUniform3f(4, scene.camera.up.x, scene.camera.up.y, scene.camera.up.z);
         glUniform1i(5, scene.lights.size());
         glUniform1i(6, scene.primitives.size());
-        struct timespec end, start;
+        struct timespec end1, end2, start;
         clock_gettime(CLOCK_MONOTONIC, &start);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        clock_gettime(CLOCK_MONOTONIC, &end1);
         SDL_GL_SwapWindow(window);
-        clock_gettime(CLOCK_MONOTONIC, &end);
-        std::cout << (end.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        clock_gettime(CLOCK_MONOTONIC, &end2);
+        std::cout << "glDrawArrays\t\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "SDL_GL_SwapWindow\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         glDeleteProgram(program);
