@@ -80,6 +80,7 @@ struct SoftwareRenderer : Renderer {
         clock_gettime(CLOCK_MONOTONIC, &end3);
         SDL_RenderPresent(renderer);
         clock_gettime(CLOCK_MONOTONIC, &end4);
+        std::cout << "Render timings:" << std::endl;
         std::cout << "Pixel rendering\t\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         std::cout << "SDL_UnlockTexture\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         std::cout << "SDL_RenderCopy\t\t" << (end3.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;

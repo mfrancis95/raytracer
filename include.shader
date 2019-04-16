@@ -128,7 +128,7 @@ bool triangleIntersect(Triangle triangle, Ray ray, out Intersection intersection
         return false;
     }
     intersection.distance = t;
-    intersection.normal = normalize(v0v1 * v0v2);
+    intersection.normal = normalize(cross(v0v1, v0v2));
     intersection.point = ray.direction * t + ray.origin;
     return true;
 }

@@ -38,3 +38,9 @@ void Triangle::serialise(char *buffer) const {
     vertex2.serialise(buffer + 48);
     vertex3.serialise(buffer + 64);
 }
+
+void Triangle::translate(const Vector &translation) {
+    vertex1 += translation;
+    vertex2 += translation;
+    vertex3 += translation;
+}

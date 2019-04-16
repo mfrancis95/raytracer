@@ -90,7 +90,7 @@ struct ComputeRenderer : OpenGLRenderer {
         );
         glUniform3f(4, scene.camera.up.x, scene.camera.up.y, scene.camera.up.z);
         glUniform1i(5, scene.lights.size());
-        glUniform1i(6, scene.primitives.size());        
+        glUniform1i(6, scene.primitives.size());
         glAttachShader(
             fragmentProgram = glCreateProgram(),
             vertexShader = setupShader(GL_VERTEX_SHADER, {"shader.vert"})
@@ -112,6 +112,7 @@ struct ComputeRenderer : OpenGLRenderer {
         clock_gettime(CLOCK_MONOTONIC, &end4);
         SDL_GL_SwapWindow(window);
         clock_gettime(CLOCK_MONOTONIC, &end5);
+        std::cout << "Render timings:" << std::endl;
         std::cout << "glDispatchCompute\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         std::cout << "glMemoryBarrier\t\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         std::cout << "glUseProgram\t\t" << (end3.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
@@ -120,10 +121,10 @@ struct ComputeRenderer : OpenGLRenderer {
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         glDeleteProgram(fragmentProgram);
-        glDeleteVertexArrays(1, &vertexArray);
         glDeleteShader(computeShader);
         glDeleteProgram(computeProgram);
         glDeleteBuffers(5, buffers);
+        glDeleteVertexArrays(1, &vertexArray);
         SDL_GL_DeleteContext(context);
     }
 

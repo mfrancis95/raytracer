@@ -36,3 +36,7 @@ void Sphere::serialise(char *buffer) const {
     position.serialise(buffer + 16);
     *reinterpret_cast<float *>(buffer + 28) = radiusSquared;
 }
+
+void Sphere::translate(const Vector &translation) {
+    position += translation;
+}

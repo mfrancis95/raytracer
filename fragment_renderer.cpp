@@ -96,6 +96,7 @@ struct FragmentRenderer : OpenGLRenderer {
         clock_gettime(CLOCK_MONOTONIC, &end1);
         SDL_GL_SwapWindow(window);
         clock_gettime(CLOCK_MONOTONIC, &end2);
+        std::cout << "Render timings:" << std::endl;
         std::cout << "glDrawArrays\t\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         std::cout << "SDL_GL_SwapWindow\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
         glDeleteShader(vertexShader);
