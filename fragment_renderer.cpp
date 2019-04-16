@@ -8,6 +8,8 @@ struct FragmentRenderer : OpenGLRenderer {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
         SDL_GLContext context = SDL_GL_CreateContext(window);
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+        SDL_GL_SetSwapInterval(0);
         glFrontFace(GL_CW);
         GLuint buffers[4], fragmentShader, program, vertexArray, vertexShader;
         glGenVertexArrays(1, &vertexArray);
