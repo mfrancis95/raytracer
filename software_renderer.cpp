@@ -1,8 +1,8 @@
 #include <cmath>
-#include <ctime>
 #include <iostream>
 #include "illumination.h"
 #include "renderer.h"
+#include "timer.h"
 
 static Vector rayTrace(Primitive *ignore, const Ray &ray, const Scene &scene) {
     Intersection closestIntersection = NO_INTERSECTION;
@@ -65,26 +65,26 @@ struct SoftwareRenderer : Renderer {
             texture, nullptr, reinterpret_cast<void **>(&pixels), &pitch
         );
         auto aspectRatio = width * 1.0 / height;
-        struct timespec end1, end2, end3, end4, start;
-        clock_gettime(CLOCK_MONOTONIC, &start);
+        Timer::start();
         #pragma omp parallel for collapse(2)
         for (auto x = 0; x < width; x++) {
             for (auto y = 0; y < height; y++) {
                 pixels[x + y * width] = static_cast<unsigned>(rayTrace(nullptr, scene.camera.castRay(((x * 1.0 / width) - 0.5) * aspectRatio, y * 1.0 / height - 0.5), scene));
             }
         }
-        clock_gettime(CLOCK_MONOTONIC, &end1);
+        auto time1 = Timer::takeTime();
         SDL_UnlockTexture(texture);
-        clock_gettime(CLOCK_MONOTONIC, &end2);
+        auto time2 = Timer::takeTime();
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-        clock_gettime(CLOCK_MONOTONIC, &end3);
+        auto time3 = Timer::takeTime();
         SDL_RenderPresent(renderer);
-        clock_gettime(CLOCK_MONOTONIC, &end4);
+        auto time4 = Timer::takeTime();
         std::cout << "Render timings:" << std::endl;
-        std::cout << "Pixel rendering\t\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "SDL_UnlockTexture\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "SDL_RenderCopy\t\t" << (end3.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "SDL_RenderPresent\t" << (end4.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "Pixel rendering\t\t" << time1 << std::endl;
+        std::cout << "SDL_UnlockTexture\t" << (time2 - time1) << std::endl;
+        std::cout << "SDL_RenderCopy\t\t" << (time3 - time2) << std::endl;
+        std::cout << "SDL_RenderPresent\t" << (time4 - time3) << std::endl;
+        std::cout << "Total rendering\t\t" << time4 << std::endl;
         SDL_DestroyTexture(texture);
         SDL_DestroyRenderer(renderer);
     }
