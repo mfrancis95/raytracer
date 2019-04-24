@@ -3,8 +3,8 @@ all: compute_renderer fragment_renderer opencl_renderer software_renderer
 camera.o: camera.cpp camera.h ray.h
 	g++ $(FLAGS) -c camera.cpp
 
-compute_renderer: camera.o compute_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
-	g++ $(FLAGS) -o compute_renderer camera.o compute_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
+compute_renderer: camera.o compute_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o timer.o triangle.o vector.o
+	g++ $(FLAGS) -o compute_renderer camera.o compute_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o timer.o triangle.o vector.o -lGL -lSDL2
 
 compute_renderer.o: compute_renderer.cpp opengl_renderer.h
 	g++ $(FLAGS) -c compute_renderer.cpp
@@ -12,8 +12,8 @@ compute_renderer.o: compute_renderer.cpp opengl_renderer.h
 clean:
 	rm -f *.o compute_renderer fragment_renderer opencl_renderer software_renderer
 
-fragment_renderer: camera.o fragment_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
-	g++ $(FLAGS) -o fragment_renderer camera.o fragment_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lSDL2
+fragment_renderer: camera.o fragment_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o timer.o triangle.o vector.o
+	g++ $(FLAGS) -o fragment_renderer camera.o fragment_renderer.o main.o obj.o opengl_renderer.o phong.o sphere.o timer.o triangle.o vector.o -lGL -lSDL2
 
 fragment_renderer.o: fragment_renderer.cpp opengl_renderer.h
 	g++ $(FLAGS) -c fragment_renderer.cpp
@@ -42,11 +42,14 @@ phong.o: illumination.h intersection.h light.h material.h phong.cpp phong.h
 sphere.o: primitive.h sphere.cpp sphere.h
 	g++ $(FLAGS) -c sphere.cpp
 
-software_renderer: camera.o group.o main.o obj.o phong.o sphere.o software_renderer.o triangle.o vector.o
-	g++ $(FLAGS) -fopenmp -o software_renderer camera.o group.o main.o obj.o phong.o sphere.o software_renderer.o triangle.o vector.o -lSDL2
+software_renderer: camera.o group.o main.o obj.o phong.o sphere.o software_renderer.o timer.o triangle.o vector.o
+	g++ $(FLAGS) -fopenmp -o software_renderer camera.o group.o main.o obj.o phong.o sphere.o software_renderer.o timer.o triangle.o vector.o -lSDL2
 
-software_renderer.o: renderer.h software_renderer.cpp
+software_renderer.o: renderer.h software_renderer.cpp timer.h
 	g++ $(FLAGS) -c -fopenmp software_renderer.cpp
+
+timer.o: timer.cpp timer.h
+	g++ $(FLAGS) -c timer.cpp
 
 triangle.o: primitive.h triangle.cpp triangle.h
 	g++ $(FLAGS) -c triangle.cpp

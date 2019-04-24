@@ -1,5 +1,5 @@
-#include <ctime>
 #include "opengl_renderer.h"
+#include "timer.h"
 
 struct ComputeRenderer : OpenGLRenderer {
 
@@ -102,24 +102,24 @@ struct ComputeRenderer : OpenGLRenderer {
             fragmentShader = setupShader(GL_FRAGMENT_SHADER, {"shader2.frag"})
         );
         glLinkProgram(fragmentProgram);
-        struct timespec end1, end2, end3, end4, end5, start;
-        clock_gettime(CLOCK_MONOTONIC, &start);
+        Timer::start();
         glDispatchCompute(1280, 960, 1);
-        clock_gettime(CLOCK_MONOTONIC, &end1);
+        auto end1 = Timer::takeTime();
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        clock_gettime(CLOCK_MONOTONIC, &end2);
+        auto end2 = Timer::takeTime();
         glUseProgram(fragmentProgram);
-        clock_gettime(CLOCK_MONOTONIC, &end3);
+        auto end3 = Timer::takeTime();
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        clock_gettime(CLOCK_MONOTONIC, &end4);
+        auto end4 = Timer::takeTime();
         SDL_GL_SwapWindow(window);
-        clock_gettime(CLOCK_MONOTONIC, &end5);
+        auto end5 = Timer::takeTime();
         std::cout << "Render timings:" << std::endl;
-        std::cout << "glDispatchCompute\t" << (end1.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "glMemoryBarrier\t\t" << (end2.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "glUseProgram\t\t" << (end3.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "glDrawArrays\t\t" << (end4.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
-        std::cout << "SDL_GL_SwapWindow\t" << (end5.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+        std::cout << "glDispatchCompute\t" << end1 << std::endl;
+        std::cout << "glMemoryBarrier\t\t" << (end2 - end1) << std::endl;
+        std::cout << "glUseProgram\t\t" << (end3 - end2) << std::endl;
+        std::cout << "glDrawArrays\t\t" << (end4 - end3) << std::endl;
+        std::cout << "SDL_GL_SwapWindow\t" << (end5 - end4) << std::endl;
+        std::cout << "Total rendering\t\t" << end5 << std::endl;
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
         glDeleteProgram(fragmentProgram);
