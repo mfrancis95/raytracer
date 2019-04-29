@@ -3,6 +3,7 @@
 #include "phong.h"
 #include "renderer.h"
 #include "sphere.h"
+#include "timer.h"
 #include "triangle.h"
 
 int main() {
@@ -14,25 +15,19 @@ int main() {
     Scene scene = {0x11};
     // Bunny
     /*scene.camera = {{0, 0, 0.25}, {0, 0.1, 0}};
-    struct timespec end, start;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    Timer::start();
     scene.primitives = OBJ::read("bunny.obj");
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    std::cout << "Read bunny\t\t" << (end.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;*/
+    std::cout << "Read bunny\t\t" << Timer::takeTime() << std::endl;*/
     // Cube
     scene.camera = {{2, 3, 5}, {0, 0, 0}};
-    struct timespec end, start;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    Timer::start();
     scene.primitives = OBJ::read("cube.obj");
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    std::cout << "Read cube\t\t" << (end.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;
+    std::cout << "Read cube\t\t" << Timer::takeTime() << std::endl;
     // Teapot
     /*scene.camera = {{2, 5, 10}, {0, 0, 0}};
-    struct timespec end, start;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    Timer::start();
     scene.primitives = OBJ::read("teapot.obj");
-    clock_gettime(CLOCK_MONOTONIC, &end);
-    std::cout << "Read teapot\t\t" << (end.tv_nsec - start.tv_nsec) / 1000000.0 << std::endl;*/
+    std::cout << "Read teapot\t\t" << Timer::takeTime() << std::endl;*/
     scene.lights.push_back({0xFFFFFF, {5, 3, 2}});
     for (auto i = 0; i < scene.primitives.size(); i++) {
         scene.illuminations.push_back(new Phong);

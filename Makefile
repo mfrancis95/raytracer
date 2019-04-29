@@ -27,8 +27,8 @@ main.o: main.cpp
 obj.o: obj.cpp obj.h primitive.h
 	g++ $(FLAGS) -c obj.cpp
 
-opencl_renderer: camera.o main.o obj.o opencl_renderer.o opengl_renderer.o phong.o sphere.o triangle.o vector.o
-	g++ $(FLAGS) -o opencl_renderer camera.o main.o obj.o opencl_renderer.o opengl_renderer.o phong.o sphere.o triangle.o vector.o -lGL -lOpenCL -lSDL2
+opencl_renderer: camera.o main.o obj.o opencl_renderer.o opengl_renderer.o phong.o sphere.o timer.o triangle.o vector.o
+	g++ $(FLAGS) -o opencl_renderer camera.o main.o obj.o opencl_renderer.o opengl_renderer.o phong.o sphere.o timer.o triangle.o vector.o -lGL -lOpenCL -lSDL2
 
 opencl_renderer.o: opencl_renderer.cpp opengl_renderer.h
 	g++ $(FLAGS) -c opencl_renderer.cpp

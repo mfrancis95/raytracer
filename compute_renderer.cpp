@@ -6,9 +6,9 @@ struct ComputeRenderer : OpenGLRenderer {
     void render(SDL_Window *window, const Scene &scene) const {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
-        SDL_GLContext context = SDL_GL_CreateContext(window);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
         SDL_GL_SetSwapInterval(0);
+        SDL_GLContext context = SDL_GL_CreateContext(window);
         glFrontFace(GL_CW);
         GLuint buffers[5], computeShader, computeProgram, fragmentProgram,
             fragmentShader, vertexArray, vertexShader;
